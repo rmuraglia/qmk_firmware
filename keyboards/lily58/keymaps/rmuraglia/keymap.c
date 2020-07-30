@@ -1,7 +1,7 @@
 #include QMK_KEYBOARD_H
 
 // to do:
-// finish numpad layer, add a tapdance to toggle on
+// finish numpad layer, maybe add a tapdance to toggle on
 // leader or layer for complex shortcuts (e.g. sublime cmd palette, origami, magnet)
 // figure out how to move by half screen, like vim c-u, c-d
 
@@ -84,6 +84,28 @@ void process_combo_event(uint8_t combo_index, bool pressed) {
   }
 };
 
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LSFT_T(KC_BSPC):
+            return 150;
+        case RSFT_T(KC_SPC):
+            return 150;
+        default:
+            return TAPPING_TERM;
+    }
+}
+
+bool get_ignore_mod_tap_interrupt(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LSFT_T(KC_BSPC):
+            return true;
+        case RSFT_T(KC_SPC):
+            return true;
+        default:
+            return false;
+    }
+}
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* QWERTY
@@ -94,19 +116,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |EscCtl|   A  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |   K  |   L  |   ;: |  '"  |
  * |------+------+------+------+------+------|   MDS |    |  MDS  |------+------+------+------+------+------|
- * |LShift|   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,< |   .> |   /? |SftEnt|
+ * |LShift|   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,< |   .> |   /? |RShift|
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   | LAlt | Esc  | Tab  | /BackSP /       \Space \  | Enter |  Del | Ctrl |
- *                   |      | LGUI |FN_NUM|/ Shift /         \      \ |SYM_NAV| RGUI |      |
- *                   `----------------------------'           '------''--------------------'
+ *                   |      | LGUI |FN_NUM|/ Shift /         \ Shift\ |SYM_NAV| RGUI |      |
+ *                   `----------------------------'           '------''---------------------'
  */
 
  [_QWERTY] = LAYOUT( \
   KC_GRV,   KC_1,   KC_2,    KC_3,    KC_4,    KC_5,                     KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC, \
   KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_MINS, \
   LCTL_T(KC_ESC), KC_A, KC_S, KC_D,   KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, \
-  KC_LSFT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, MO(_MDS), MO(_MDS), KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_SFTENT, \
-  KC_LALT, LGUI_T(KC_ESC), LT(_FN_NUM, KC_TAB), LSFT_T(KC_BSPC), KC_SPC, LT(_SYM_NAV, KC_ENT), RGUI_T(KC_DEL), KC_RCTL  \
+  KC_LSFT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, MO(_MDS), MO(_MDS), KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSHIFT, \
+  KC_LALT, LGUI_T(KC_ESC), LT(_FN_NUM, KC_TAB), LSFT_T(KC_BSPC), RSFT_T(KC_SPC), LT(_SYM_NAV, KC_ENT), RGUI_T(KC_DEL), KC_RCTL  \
 ),
 /* SYM_NAV: symbols and navigation
  * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -130,6 +152,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                     _______, _______, _______, KC_BSPC,                   KC_SPC,  _______, KC_DEL, _______ \
 ),
 /* MDS: Movement, deletion and selection
+ *                      |        LEFT        |                    |        RIGHT       |
  *                      | LINE | WORD | CHAR |                    | CHAR | WORD | LINE |
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
