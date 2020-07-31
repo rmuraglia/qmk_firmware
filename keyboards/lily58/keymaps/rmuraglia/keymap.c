@@ -5,6 +5,7 @@
 // finish vertical movement in MDS layer. may require macros for deletion (select then delete, or move then ctrl shift k)
 // leader or layer for complex shortcuts (e.g. sublime cmd palette, origami, magnet)
   // leader key cannot be on a tap dance or mod tap. consider putting it on a combo like FJ?
+  // currently existing leader combo (FJ) doesn't work... makes a T instead?
 // figure out how to move by half screen, like vim c-u, c-d
 
 // Potential changes:
@@ -50,17 +51,20 @@ enum layers {
 enum combo_events {
   ZOOM_PLUS,
   ZOOM_MINUS,
-  ZOOM_RESET
+  ZOOM_RESET,
+  LEADER_INIT
 };
 
 const uint16_t PROGMEM zoom_plus_combo[] = {KC_RCTL, KC_QUOT, COMBO_END};
 const uint16_t PROGMEM zoom_minus_combo[] = {KC_RCTL, KC_MINS, COMBO_END};
 const uint16_t PROGMEM zoom_reset_combo[] = {KC_RCTL, KC_0, COMBO_END};
+const uint16_t PROGMEM leader_combo[] = {KC_F, KC_J, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
   [ZOOM_PLUS] = COMBO_ACTION(zoom_plus_combo),
   [ZOOM_MINUS] = COMBO_ACTION(zoom_minus_combo),
-  [ZOOM_RESET] = COMBO_ACTION(zoom_reset_combo)
+  [ZOOM_RESET] = COMBO_ACTION(zoom_reset_combo),
+  [LEADER_INIT] = COMBO_ACTION(leader_combo)
 };
 
 void process_combo_event(uint8_t combo_index, bool pressed) {
@@ -78,6 +82,11 @@ void process_combo_event(uint8_t combo_index, bool pressed) {
     case ZOOM_RESET:
       if (pressed) {
         tap_code16(RGUI(KC_0));
+      }
+      break;
+    case LEADER_INIT:
+      if (pressed) {
+        tap_code16(KC_LEAD);
       }
       break;
   }
@@ -152,7 +161,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
  [_QWERTY] = LAYOUT( \
   KC_GRV,   KC_1,   KC_2,    KC_3,    KC_4,    KC_5,                     KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC, \
-  KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_MINS, \
+  KC_LEAD,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_MINS, \
   LCTL_T(KC_ESC), KC_A, KC_S, KC_D,   KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, \
   KC_LSFT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, TD(LT_MWR), TD(LT_MWL), KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSHIFT, \
   KC_LALT, LGUI_T(KC_ESC), LT(_FN_NUM, KC_TAB), LSFT_T(KC_BSPC), RSFT_T(KC_SPC), LT(_SYM_NAV, KC_ENT), RGUI_T(KC_DEL), KC_RCTL  \
@@ -284,8 +293,38 @@ void matrix_scan_user(void) {
     SEQ_ONE_KEY(KC_Q) {  // OSX lock screen
       register_code16(RGUI(RCTL(KC_Q)));
     }
+    SEQ_ONE_KEY(KC_F) {  // spotlight (find)
+      SEND_STRING(SS_LGUI(" "));
+    }
+    SEQ_ONE_KEY(KC_S) {  // screenshot
+      register_code16(LGUI(LSFT(KC_4)));
+    }
     SEQ_TWO_KEYS(KC_S, KC_L) {  // spotlight -> go to slack
       SEND_STRING(SS_LGUI(" ") SS_DELAY(50) "slack" SS_TAP(X_ENT));
+    }
+    SEQ_THREE_KEYS(KC_M, KC_F, KC_S) {  // magnet, full screen
+      register_code16(LGUI(LOPT(KC_UP)));
+    }
+    SEQ_FOUR_KEYS(KC_M, KC_L, KC_1, KC_3) {  // magnet, left, 1/3
+      register_code16(LCTL(LOPT(KC_LEFT)));
+    }
+    SEQ_FOUR_KEYS(KC_M, KC_L, KC_1, KC_2) {  // magnet, left, 1/2
+      register_code16(LGUI(LOPT(KC_LEFT)));
+    }
+    SEQ_FOUR_KEYS(KC_M, KC_L, KC_2, KC_3) {  // magnet, left, 2/3
+      register_code16(LCTL(LGUI(KC_LEFT)));
+    }
+    SEQ_FOUR_KEYS(KC_M, KC_R, KC_1, KC_3) {  // magnet, right, 1/3
+      register_code16(LCTL(LOPT(KC_RIGHT)));
+    }
+    SEQ_FOUR_KEYS(KC_M, KC_R, KC_1, KC_2) {  // magnet, right, 1/2
+      register_code16(LGUI(LOPT(KC_RIGHT)));
+    }
+    SEQ_FOUR_KEYS(KC_M, KC_R, KC_2, KC_3) {  // magnet, right, 2/3
+      register_code16(LCTL(LGUI(KC_RIGHT)));
+    }
+    SEQ_FOUR_KEYS(KC_M, KC_M, KC_1, KC_3) {  // magnet, middle, 1/3
+      register_code16(LCTL(LOPT(KC_DOWN)));
     }
   }
 }
