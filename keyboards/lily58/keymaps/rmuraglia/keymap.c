@@ -10,6 +10,12 @@
 
 // Potential changes:
 // deprecate training wheel degenerate keys (tab, escCtrl, shifts, backspace)
+// put equal on tap dance for minus, and plus on tap dance for quote (matches keycap legend)
+  // problem here is that those keys are already used in combos. if I turn them into tapdances, then they won't be combo compatible basic keycodes anymore.
+  // crazy quad function tapdance is possible:
+  // minus: 1 tap minus, 2 tap dashdash, tap hold zoom out, 3 tap equal
+  // quote: 1 tap quote, 2 tap  plus, tap hold zoom in, 3 tap triple quote (e.g. py docstring)
+  // this is probably dumb though. just get better as using the sym layer quicky...
 
 // refs:
 // https://github.com/qmk/qmk_firmware/blob/master/keyboards/lily58/keymaps/bcat/keymap.c
@@ -51,20 +57,17 @@ enum layers {
 enum combo_events {
   ZOOM_PLUS,
   ZOOM_MINUS,
-  ZOOM_RESET,
-  LEADER_INIT
+  ZOOM_RESET
 };
 
 const uint16_t PROGMEM zoom_plus_combo[] = {KC_RCTL, KC_QUOT, COMBO_END};
 const uint16_t PROGMEM zoom_minus_combo[] = {KC_RCTL, KC_MINS, COMBO_END};
 const uint16_t PROGMEM zoom_reset_combo[] = {KC_RCTL, KC_0, COMBO_END};
-const uint16_t PROGMEM leader_combo[] = {KC_F, KC_J, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
   [ZOOM_PLUS] = COMBO_ACTION(zoom_plus_combo),
   [ZOOM_MINUS] = COMBO_ACTION(zoom_minus_combo),
-  [ZOOM_RESET] = COMBO_ACTION(zoom_reset_combo),
-  [LEADER_INIT] = COMBO_ACTION(leader_combo)
+  [ZOOM_RESET] = COMBO_ACTION(zoom_reset_combo)
 };
 
 void process_combo_event(uint8_t combo_index, bool pressed) {
@@ -82,11 +85,6 @@ void process_combo_event(uint8_t combo_index, bool pressed) {
     case ZOOM_RESET:
       if (pressed) {
         tap_code16(RGUI(KC_0));
-      }
-      break;
-    case LEADER_INIT:
-      if (pressed) {
-        tap_code16(KC_LEAD);
       }
       break;
   }
@@ -290,9 +288,9 @@ void matrix_scan_user(void) {
     leading = false;
     leader_end();
 
-    SEQ_ONE_KEY(KC_Q) {  // OSX lock screen
-      register_code16(RGUI(RCTL(KC_Q)));
-    }
+    // SEQ_ONE_KEY(KC_Q) {  // OSX lock screen
+    //   register_code16(RGUI(RCTL(KC_Q)));  // this one causes problems with mod keyups not being registered before locking
+    // }
     SEQ_ONE_KEY(KC_F) {  // spotlight (find)
       SEND_STRING(SS_LGUI(" "));
     }
@@ -305,25 +303,25 @@ void matrix_scan_user(void) {
     SEQ_THREE_KEYS(KC_M, KC_F, KC_S) {  // magnet, full screen
       register_code16(LGUI(LOPT(KC_UP)));
     }
-    SEQ_FOUR_KEYS(KC_M, KC_L, KC_1, KC_3) {  // magnet, left, 1/3
+    SEQ_FOUR_KEYS(KC_M, KC_H, KC_1, KC_3) {  // magnet, left, 1/3
       register_code16(LCTL(LOPT(KC_LEFT)));
     }
-    SEQ_FOUR_KEYS(KC_M, KC_L, KC_1, KC_2) {  // magnet, left, 1/2
+    SEQ_FOUR_KEYS(KC_M, KC_H, KC_1, KC_2) {  // magnet, left, 1/2
       register_code16(LGUI(LOPT(KC_LEFT)));
     }
-    SEQ_FOUR_KEYS(KC_M, KC_L, KC_2, KC_3) {  // magnet, left, 2/3
+    SEQ_FOUR_KEYS(KC_M, KC_H, KC_2, KC_3) {  // magnet, left, 2/3
       register_code16(LCTL(LGUI(KC_LEFT)));
     }
-    SEQ_FOUR_KEYS(KC_M, KC_R, KC_1, KC_3) {  // magnet, right, 1/3
+    SEQ_FOUR_KEYS(KC_M, KC_L, KC_1, KC_3) {  // magnet, right, 1/3
       register_code16(LCTL(LOPT(KC_RIGHT)));
     }
-    SEQ_FOUR_KEYS(KC_M, KC_R, KC_1, KC_2) {  // magnet, right, 1/2
+    SEQ_FOUR_KEYS(KC_M, KC_L, KC_1, KC_2) {  // magnet, right, 1/2
       register_code16(LGUI(LOPT(KC_RIGHT)));
     }
-    SEQ_FOUR_KEYS(KC_M, KC_R, KC_2, KC_3) {  // magnet, right, 2/3
+    SEQ_FOUR_KEYS(KC_M, KC_L, KC_2, KC_3) {  // magnet, right, 2/3
       register_code16(LCTL(LGUI(KC_RIGHT)));
     }
-    SEQ_FOUR_KEYS(KC_M, KC_M, KC_1, KC_3) {  // magnet, middle, 1/3
+    SEQ_FOUR_KEYS(KC_M, KC_J, KC_1, KC_3) {  // magnet, middle, 1/3
       register_code16(LCTL(LOPT(KC_DOWN)));
     }
   }

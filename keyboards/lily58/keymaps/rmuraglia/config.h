@@ -39,4 +39,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #undef RGBLED_NUM
 
-#define COMBO_COUNT 4
+#define COMBO_COUNT 3
