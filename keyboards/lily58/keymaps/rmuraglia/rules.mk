@@ -30,5 +30,5 @@ SRC +=  ./lib/rgb_state_reader.c \
         # ./lib/timelogger.c \
 
 COMBO_ENABLE = yes
-TAP_DANCE_ENABLE = yes
+# TAP_DANCE_ENABLE = yes
 LEADER_ENABLE = yes

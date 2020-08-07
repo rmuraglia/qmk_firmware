@@ -92,23 +92,23 @@ void process_combo_event(uint8_t combo_index, bool pressed) {
 
 // tap dance on inner column keys to have layer tap + custom key code
 // most common use for keys is move by word, so put that as default, with option to go into layer if need other MDS action
-enum tap_dances {
-  LT_MWL,  // layer tap to MDS + move word left
-  LT_MWR   // layer tap to MDS + move word right
-};
+// enum tap_dances {
+//   LT_MWL,  // layer tap to MDS + move word left
+//   LT_MWR   // layer tap to MDS + move word right
+// };
 
-typedef enum {
-    SINGLE_TAP,
-    SINGLE_HOLD
-} td_state_t;
+// typedef enum {
+//     SINGLE_TAP,
+//     SINGLE_HOLD
+// } td_state_t;
 
-static td_state_t td_state;
+// static td_state_t td_state;
 
-uint8_t cur_dance(qk_tap_dance_state_t *state);
-void ltmwl_finished(qk_tap_dance_state_t *state, void *user_data);
-void ltmwl_reset(qk_tap_dance_state_t *state, void *user_data);
-void ltmwr_finished(qk_tap_dance_state_t *state, void *user_data);
-void ltmwr_reset(qk_tap_dance_state_t *state, void *user_data);
+// uint8_t cur_dance(qk_tap_dance_state_t *state);
+// void ltmwl_finished(qk_tap_dance_state_t *state, void *user_data);
+// void ltmwl_reset(qk_tap_dance_state_t *state, void *user_data);
+// void ltmwr_finished(qk_tap_dance_state_t *state, void *user_data);
+// void ltmwr_reset(qk_tap_dance_state_t *state, void *user_data);
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -116,10 +116,10 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
             return 150;
         case RSFT_T(KC_SPC):
             return 150;
-        case TD(LT_MWL):
-            return 1;  // make tapping term for tap dance really short to minimize time before entering layer or for key repress
-        case TD(LT_MWR):
-            return 1;
+        // case TD(LT_MWL):
+        //     return 1;  // make tapping term for tap dance really short to minimize time before entering layer or for key repress
+        // case TD(LT_MWR):
+        //     return 1;
         default:
             return TAPPING_TERM;
     }
@@ -149,7 +149,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * | Tab  |   Q  |   W  |   E  |   R  |   T  |                    |   Y  |   U  |   I  |   O  |   P  |  -_  |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |EscCtl|   A  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |   K  |   L  |   ;: |  '"  |
- * |------+------+------+------+------+------|MWR/MDS|    |MWL/MDS|------+------+------+------+------+------|
+ * |------+------+------+------+------+------|  MDS  |    |  MDS  |------+------+------+------+------+------|
  * |LShift|   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,< |   .> |   /? |RShift|
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   | LAlt | Esc  | Tab  | /BackSP /       \Space \  | Enter |  Del | Ctrl |
@@ -161,7 +161,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_GRV,   KC_1,   KC_2,    KC_3,    KC_4,    KC_5,                     KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC, \
   KC_LEAD,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_MINS, \
   LCTL_T(KC_ESC), KC_A, KC_S, KC_D,   KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, \
-  KC_LSFT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, TD(LT_MWR), TD(LT_MWL), KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSHIFT, \
+  KC_LSFT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, MO(_MDS), MO(_MDS), KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSHIFT, \
   KC_LALT, LGUI_T(KC_ESC), LT(_FN_NUM, KC_TAB), LSFT_T(KC_BSPC), RSFT_T(KC_SPC), LT(_SYM_NAV, KC_ENT), RGUI_T(KC_DEL), KC_RCTL  \
 ),
 /* SYM_NAV: symbols and navigation
@@ -171,7 +171,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |      |   |  |   }  |   ]  |   )  |   +  |                    | Home | PgDn | PgUp | End  |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |   \  |   {  |   [  |   (  |   =  |-------.    ,-------| Left | Down |  Up  | Right|      |      |
- * |------+------+------+------+------+------|  MWR  |    |  MWL  |------+------+------+------+------+------|
+ * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
  * |      |      |      |      |      |      |-------|    |-------|      |      |      |      |      | Enter|
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   |      |      |      | /BackSP /       \Space \  |      |  Del |      |
@@ -182,7 +182,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, _______, _______, _______, _______, _______,                   XXXXXXX, XXXXXXX, XXXXXXX,XXXXXXX, XXXXXXX, _______, \
   _______, KC_PIPE, KC_RCBR, KC_RBRC, KC_RPRN,  KC_PLUS,                  KC_HOME, KC_PGDN, KC_PGUP, KC_END, XXXXXXX, _______, \
   _______, KC_BSLS, KC_LCBR, KC_LBRC, KC_LPRN, KC_EQUAL,                  KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, XXXXXXX, _______, \
-  _______, _______, _______, _______, _______, _______, KY_MWR,   KY_MWL, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_ENT, \
+  _______, _______, _______, _______, _______, _______, _______,   _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_ENT, \
                     _______, _______, _______, KC_BSPC,                   KC_SPC,  _______, KC_DEL, _______ \
 ),
 /* MDS: Movement, deletion and selection
@@ -218,7 +218,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |      |      |  Up |Bright+| Next | Vol+ |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      | Left | Down | Right| Play | Mute |-------.    ,-------|      |      |      |      |      |      |
- * |------+------+------+------+------+------|  MWR  |    |  MWL  |------+------+------+------+------+------|
+ * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
  * |      |      |     |Bright-| Prev | Vol- |-------|    |-------|      |      |      |      |      | Enter|
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   |      |      |      | /BackSP /       \Space \  |      |  Del |      |
@@ -229,56 +229,56 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_DEL, \
   XXXXXXX, XXXXXXX,   KC_UP,   KC_F2,   KC_F9,  KC_F12,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
   XXXXXXX, KC_LEFT, KC_DOWN, KC_RIGHT,  KC_F8,  KC_F10,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
-  XXXXXXX, XXXXXXX, XXXXXXX,   KC_F1,   KC_F7,  KC_F11, KY_MWR,   KY_MWL, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_ENT, \
+  XXXXXXX, XXXXXXX, XXXXXXX,   KC_F1,   KC_F7,  KC_F11, _______,   _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_ENT, \
                     _______, _______, _______, KC_BSPC,                   KC_SPC,  _______, KC_DEL, _______ \
 )
 };
 
 // Determine the tapdance state to return
-uint8_t cur_dance(qk_tap_dance_state_t *state) {
-    if (state->count == 1) {
-        if (state->interrupted || !state->pressed) return SINGLE_TAP;
-        else return SINGLE_HOLD;
-    }
-    else return 2; // Any number higher than the maximum state value you return above
-}
+// uint8_t cur_dance(qk_tap_dance_state_t *state) {
+//     if (state->count == 1) {
+//         if (state->interrupted || !state->pressed) return SINGLE_TAP;
+//         else return SINGLE_HOLD;
+//     }
+//     else return 2; // Any number higher than the maximum state value you return above
+// }
 
-// Handle the possible states for each tapdance keycode you define:
-void ltmwl_finished(qk_tap_dance_state_t *state, void *user_data) {
-    td_state = cur_dance(state);
-    switch (td_state) {
-        case SINGLE_TAP: register_code16(KY_MWL); break;
-        case SINGLE_HOLD: layer_on(_MDS); break;
-    }
-}
+// // Handle the possible states for each tapdance keycode you define:
+// void ltmwl_finished(qk_tap_dance_state_t *state, void *user_data) {
+//     td_state = cur_dance(state);
+//     switch (td_state) {
+//         case SINGLE_TAP: register_code16(KY_MWL); break;
+//         case SINGLE_HOLD: layer_on(_MDS); break;
+//     }
+// }
 
-void ltmwl_reset(qk_tap_dance_state_t *state, void *user_data) {
-    switch (td_state) {
-        case SINGLE_TAP: unregister_code16(KY_MWL); break;
-        case SINGLE_HOLD: layer_off(_MDS); break;
-    }
-}
+// void ltmwl_reset(qk_tap_dance_state_t *state, void *user_data) {
+//     switch (td_state) {
+//         case SINGLE_TAP: unregister_code16(KY_MWL); break;
+//         case SINGLE_HOLD: layer_off(_MDS); break;
+//     }
+// }
 
-void ltmwr_finished(qk_tap_dance_state_t *state, void *user_data) {
-    td_state = cur_dance(state);
-    switch (td_state) {
-        case SINGLE_TAP: register_code16(KY_MWR); break;
-        case SINGLE_HOLD: layer_on(_MDS); break;
-    }
-}
+// void ltmwr_finished(qk_tap_dance_state_t *state, void *user_data) {
+//     td_state = cur_dance(state);
+//     switch (td_state) {
+//         case SINGLE_TAP: register_code16(KY_MWR); break;
+//         case SINGLE_HOLD: layer_on(_MDS); break;
+//     }
+// }
 
-void ltmwr_reset(qk_tap_dance_state_t *state, void *user_data) {
-    switch (td_state) {
-        case SINGLE_TAP: unregister_code16(KY_MWR); break;
-        case SINGLE_HOLD: layer_off(_MDS); break;
-    }
-}
+// void ltmwr_reset(qk_tap_dance_state_t *state, void *user_data) {
+//     switch (td_state) {
+//         case SINGLE_TAP: unregister_code16(KY_MWR); break;
+//         case SINGLE_HOLD: layer_off(_MDS); break;
+//     }
+// }
 
-// Define `ACTION_TAP_DANCE_FN_ADVANCED()` for each tapdance keycode, passing in `finished` and `reset` functions
-qk_tap_dance_action_t tap_dance_actions[] = {
-    [LT_MWL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ltmwl_finished, ltmwl_reset),
-    [LT_MWR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ltmwr_finished, ltmwr_reset)
-};
+// // Define `ACTION_TAP_DANCE_FN_ADVANCED()` for each tapdance keycode, passing in `finished` and `reset` functions
+// qk_tap_dance_action_t tap_dance_actions[] = {
+//     [LT_MWL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ltmwl_finished, ltmwl_reset),
+//     [LT_MWR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ltmwr_finished, ltmwr_reset)
+// };
 
 // Leader key for application specific shortcuts that are annoying to hit on a split board
 LEADER_EXTERNS();
