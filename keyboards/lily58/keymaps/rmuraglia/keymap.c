@@ -288,41 +288,44 @@ void matrix_scan_user(void) {
     leading = false;
     leader_end();
 
-    // SEQ_ONE_KEY(KC_Q) {  // OSX lock screen
-    //   register_code16(RGUI(RCTL(KC_Q)));  // this one causes problems with mod keyups not being registered before locking
-    // }
+    SEQ_ONE_KEY(KC_Q) {  // OSX lock screen (quit)
+      tap_code16(RGUI(RCTL(KC_Q)));
+    }
     SEQ_ONE_KEY(KC_F) {  // spotlight (find)
       SEND_STRING(SS_LGUI(" "));
     }
     SEQ_ONE_KEY(KC_S) {  // screenshot
-      register_code16(LGUI(LSFT(KC_4)));
+      tap_code16(LGUI(LSFT(KC_4)));
     }
     SEQ_TWO_KEYS(KC_S, KC_L) {  // spotlight -> go to slack
       SEND_STRING(SS_LGUI(" ") SS_DELAY(50) "slack" SS_TAP(X_ENT));
     }
     SEQ_THREE_KEYS(KC_M, KC_F, KC_S) {  // magnet, full screen
-      register_code16(LGUI(LOPT(KC_UP)));
+      tap_code16(LGUI(LOPT(KC_UP)));
     }
     SEQ_FOUR_KEYS(KC_M, KC_H, KC_1, KC_3) {  // magnet, left, 1/3
-      register_code16(LCTL(LOPT(KC_LEFT)));
+      tap_code16(LCTL(LOPT(KC_LEFT)));
     }
     SEQ_FOUR_KEYS(KC_M, KC_H, KC_1, KC_2) {  // magnet, left, 1/2
-      register_code16(LGUI(LOPT(KC_LEFT)));
+      tap_code16(LGUI(LOPT(KC_LEFT)));
     }
     SEQ_FOUR_KEYS(KC_M, KC_H, KC_2, KC_3) {  // magnet, left, 2/3
-      register_code16(LCTL(LGUI(KC_LEFT)));
+      tap_code16(LCTL(LGUI(KC_LEFT)));
     }
     SEQ_FOUR_KEYS(KC_M, KC_L, KC_1, KC_3) {  // magnet, right, 1/3
-      register_code16(LCTL(LOPT(KC_RIGHT)));
+      tap_code16(LCTL(LOPT(KC_RIGHT)));
     }
     SEQ_FOUR_KEYS(KC_M, KC_L, KC_1, KC_2) {  // magnet, right, 1/2
-      register_code16(LGUI(LOPT(KC_RIGHT)));
+      tap_code16(LGUI(LOPT(KC_RIGHT)));
     }
     SEQ_FOUR_KEYS(KC_M, KC_L, KC_2, KC_3) {  // magnet, right, 2/3
-      register_code16(LCTL(LGUI(KC_RIGHT)));
+      tap_code16(LCTL(LGUI(KC_RIGHT)));
     }
     SEQ_FOUR_KEYS(KC_M, KC_J, KC_1, KC_3) {  // magnet, middle, 1/3
-      register_code16(LCTL(LOPT(KC_DOWN)));
+      tap_code16(LCTL(LOPT(KC_DOWN)));
     }
+    // to do: Sublime Repl Line, Sublime Repl File, Sublime Command Palette, Sublime # Col, Sublime # Row, Sublime 4 Grid
+    // Origami Carry HJKL, Origami Destroy HJKL, Sublime New View (into file)
+    // tmux splits and focus
   }
 }
