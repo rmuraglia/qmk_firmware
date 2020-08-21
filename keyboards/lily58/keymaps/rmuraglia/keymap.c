@@ -1,11 +1,13 @@
 #include QMK_KEYBOARD_H
 
 // to do:
-// finish numpad layer, maybe add a tapdance to toggle on
 // finish vertical movement in MDS layer. may require macros for deletion (select then delete, or move then ctrl shift k)
 // leader or layer for complex shortcuts (e.g. sublime cmd palette, origami, magnet)
 // figure out how to move by half screen, like vim c-u, c-d
-// put shifted keycodes on layer; I find that I'm often still holding layer when I should have moved over to shift for symbols
+
+// maybe changes:
+// deprecate backspace -> +=
+// deprecate rshift -> \|
 
 // refs:
 // https://github.com/qmk/qmk_firmware/blob/master/keyboards/lily58/keymaps/bcat/keymap.c
@@ -113,7 +115,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |  `~  |   1! |   2@ |   3# |   4$ |   5% |                    |   6^ |   7& |   8* |   9( |   0) | BSPC |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * | Tab  |   Q  |   W  |   E  |   R  |   T  |                    |   Y  |   U  |   I  |   O  |   P  |  -_  |
+ * |LEADER|   Q  |   W  |   E  |   R  |   T  |                    |   Y  |   U  |   I  |   O  |   P  |  -_  |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |EscCtl|   A  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |   K  |   L  |   ;: |  '"  |
  * |------+------+------+------+------+------|  MDS  |    |  MDS  |------+------+------+------+------+------|
@@ -135,11 +137,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |   |  |   }  |   ]  |   )  |   +  |                    | Home | PgDn | PgUp | End  |      |      |
+ * |      |   |  |      |   [  |   ]  |   +  |                    | Home | PgDn | PgUp | End  |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |   \  |   {  |   [  |   (  |   =  |-------.    ,-------| Left | Down |  Up  | Right|      |      |
+ * |      |      |      |   (  |   )  |   =  |-------.    ,-------| Left | Down |  Up  | Right|      |      |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
- * |      |      |      |      |      |      |-------|    |-------|      |      |      |      |      | Enter|
+ * |      |      |      |   {  |   }  |   \  |-------|    |-------|      |      |      |      |      | Enter|
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   |      |      |      | /BackSP /       \Space \  |      |  Del |      |
  *                   |      |      |      |/       /         \      \ |      |      |      |
@@ -147,9 +149,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_SYM_NAV] = LAYOUT( \
   _______, _______, _______, _______, _______, _______,                   _______, _______, _______,_______, _______, _______, \
-  _______, KC_PIPE, KC_RCBR, KC_RBRC, KC_RPRN,  KC_PLUS,                  KC_HOME, KC_PGDN, KC_PGUP, KC_END, _______, _______, \
-  _______, KC_BSLS, KC_LCBR, KC_LBRC, KC_LPRN, KC_EQUAL,                  KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, _______, _______, \
-  _______, _______, _______, _______, _______, _______, _______,   _______, _______, _______, _______, _______, _______, KC_ENT, \
+  _______, KC_PIPE, _______, KC_LBRC, KC_RBRC,  KC_PLUS,                  KC_HOME, KC_PGDN, KC_PGUP, KC_END, _______, _______, \
+  _______, _______, _______, KC_LPRN, KC_RPRN, KC_EQUAL,                  KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, _______, _______, \
+  _______, _______, _______, KC_LCBR, KC_RCBR, KC_BSLS, _______,   _______, _______, _______, _______, _______, _______, KC_ENT, \
                     _______, _______, _______, KC_BSPC,                   KC_SPC,  _______, KC_DEL, _______ \
 ),
 /* MDS: Movement, deletion and selection
@@ -180,7 +182,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 /* FN_NUM: Functions and numpad (right hand numpad not yet implemented)
  * ,-----------------------------------------.                    ,-----------------------------------------.
- * |      |      |      |      |      |      |                    |  tab |   ^  |  *   |   -  |   )  |  Del |
+ * |      |      |      |      |      |      |                    |   ^  |  tab |  *   |   -  |   )  | BSPC |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |  Up |Bright+| Next | Vol+ |                    |   7  |   8  |  9   |   +  |   (  |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
@@ -188,16 +190,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|       |    |   0   |------+------+------+------+------+------|
  * |      |      |     |Bright-| Prev | Vol- |-------|    |-------|   1  |   2  |  3   |   .  |   /  | Enter|
  * `-----------------------------------------/       /     \      \-----------------------------------------'
- *                   |      |      |      | /BackSP /       \Space \  |  Ent |  Del |      |
+ *                   |      |      |      | /BackSP /       \Space \  |  Ent |  DEL |      |
  *                   |      |      |      |/       /         \      \ |      |      |      |
  *                   `----------------------------'           '------''--------------------'
  */
   [_FN_NUM] = LAYOUT( \
-  _______, _______, _______, _______, _______, _______,                   _______, _______, _______, _______, _______, KC_DEL, \
-  _______, _______,   KC_UP,   KC_F2,   KC_F9,  KC_F12,                   _______, _______, _______, _______, _______, _______, \
-  _______, KC_LEFT, KC_DOWN, KC_RIGHT,  KC_F8,  KC_F10,                   _______, _______, _______, _______, _______, _______, \
-  _______, _______, _______,   KC_F1,   KC_F7,  KC_F11, _______,   _______, _______, _______, _______, _______, _______, KC_ENT, \
-                    _______, _______, _______, KC_BSPC,                   KC_SPC,  _______, KC_DEL, _______ \
+  _______, _______, _______, _______, _______, _______,                   KC_CIRC,  KC_TAB, KC_ASTR, KC_MINS, KC_RPRN, KC_BSPC, \
+  _______, _______,   KC_UP,   KC_F2,   KC_F9,  KC_F12,                      KC_7,    KC_8,    KC_9, KC_PLUS, KC_LPRN, _______, \
+  _______, KC_LEFT, KC_DOWN, KC_RIGHT,  KC_F8,  KC_F10,                      KC_4,    KC_5,    KC_6, KC_EQUAL, _______, _______, \
+  _______, _______, _______,   KC_F1,   KC_F7,  KC_F11, _______,    KC_0,    KC_1,    KC_2,    KC_3, KC_DOT, KC_SLSH, KC_ENT, \
+                    _______, _______, _______, KC_BSPC,                    KC_SPC,  KC_ENT, KC_DEL, _______ \
 )
 };
 
