@@ -42,6 +42,14 @@ enum layers {
 #define KY_SWR LSFT(KY_MWR)    // select word right
 #define KY_SLL LSFT(KY_MLL)    // select line left
 #define KY_SLR LSFT(KY_MLR)    // select line right
+#define KY_CAR LGUI(KC_TAB)    // change app right
+#define KY_CAL LSFT(KY_CAR)    // change app left
+#define KY_CWR LGUI(KC_GRV)    // change window right
+#define KY_CWL LSFT(KY_CWR)    // change window left
+#define KY_CTR LCTL(KC_TAB)    // change tab right
+#define KY_CTL LSFT(KY_CTR)    // change tab left
+#define KY_CSL LCTL(LGUI(LOPT(KC_LEFT)))   // change space left
+#define KY_CSR LCTL(LGUI(LOPT(KC_RIGHT)))  // change space right
 
 // want a zoom in (cmd+) on the right side of the layout near the native zoom out and zoom resets
 // use the dedicated right control for the combo, because comboing with the mod tap cmd behaved strangely
@@ -160,7 +168,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |         UP         |        LEFT        |                    |        RIGHT       |        DOWN        |
  * |  DOC | PAGE | LINE | LINE | WORD | CHAR |                    | CHAR | WORD | LINE | LINE | PAGE | DOC  |
  * ,-----------------------------------------.                    ,-----------------------------------------.
- * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
+ * |      |      | SPCL | TABL | WINL | APPL |                    | APPR | WINR | TABR | SPCR |      |      |   FOCUS SWITCHING (application, window, tab)
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |      |  DLL |  DWL | BSPC |                    |  Del |  DWR |  DLR |      |      |      |   DELETE
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
@@ -174,7 +182,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 
 [_MDS] = LAYOUT( \
-  _______, _______, _______, _______, _______, _______,                   _______, _______, _______, _______, _______, _______, \
+  _______, _______,  KY_CSL,  KY_CTL,  KY_CWL,  KY_CAL,                    KY_CAR,  KY_CWR,  KY_CTR,  KY_CSR, _______, _______, \
   _______, _______, _______,  KY_DLL,  KY_DWL, KC_BSPC,                    KC_DEL,  KY_DWR,  KY_DLR, _______, _______, _______, \
   _______, _______, _______,  KY_MLL,  KY_MWL, KC_LEFT,                  KC_RIGHT,  KY_MWR,  KY_MLR, _______, _______, _______, \
   _______, _______, _______,  KY_SLL,  KY_SWL,  KY_SCL, _______, _______,  KY_SCR,  KY_SWR,  KY_SLR, _______, _______, KC_ENT, \
