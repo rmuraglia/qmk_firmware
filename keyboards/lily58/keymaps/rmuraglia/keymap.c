@@ -51,23 +51,63 @@ enum layers {
 #define KY_CSL LCTL(LGUI(LOPT(KC_LEFT)))   // change space left
 #define KY_CSR LCTL(LGUI(LOPT(KC_RIGHT)))  // change space right
 
+// chunk for my defined magnet shortcuts for window management
+#define MAG_L13 LCTL(LOPT(KC_LEFT))   // magnet left 1/3
+#define MAG_L12 LGUI(LOPT(KC_LEFT))   // magnet left 1/2
+#define MAG_L23 LCTL(LGUI(KC_LEFT))   // magnet left 2/3
+#define MAG_R13 LCTL(LOPT(KC_RIGHT))  // magnet right 1/3
+#define MAG_R12 LGUI(LOPT(KC_RIGHT))  // magnet right 1/2
+#define MAG_R23 LCTL(LGUI(KC_RIGHT))  // magnet right 2/3
+#define MAG_C13 LCTL(LOPT(KC_DOWN))   // magnet center 1/3
+#define MAG_FW  LGUI(LOPT(KC_UP))     // magnet full width
+#define MAG1 KC_F13  // alias obscure F-keys for magnet comboing
+#define MAG2 KC_F14  // alias obscure F-keys for magnet comboing
+#define MAG3 KC_F15  // alias obscure F-keys for magnet comboing
+#define MAG4 KC_F16  // alias obscure F-keys for magnet comboing
+#define MAG5 KC_F17  // alias obscure F-keys for magnet comboing
+
+
 // want a zoom in (cmd+) on the right side of the layout near the native zoom out and zoom resets
 // use the dedicated right control for the combo, because comboing with the mod tap cmd behaved strangely
 // make combos for zoom out and zoom reset as well for consistency
 enum combo_events {
   ZOOM_PLUS,
   ZOOM_MINUS,
-  ZOOM_RESET
+  ZOOM_RESET,
+  ML13,
+  ML12,
+  ML23,
+  MR13,
+  MR12,
+  MR23,
+  MC13,
+  MFW,
 };
 
 const uint16_t PROGMEM zoom_plus_combo[] = {KC_RCTL, KC_QUOT, COMBO_END};
 const uint16_t PROGMEM zoom_minus_combo[] = {KC_RCTL, KC_MINS, COMBO_END};
 const uint16_t PROGMEM zoom_reset_combo[] = {KC_RCTL, KC_0, COMBO_END};
+const uint16_t PROGMEM ml13[] = {MAG1, COMBO_END};
+const uint16_t PROGMEM ml12[] = {MAG1, MAG2, COMBO_END};
+const uint16_t PROGMEM ml23[] = {MAG1, MAG3, COMBO_END};
+const uint16_t PROGMEM mr13[] = {MAG5, COMBO_END};
+const uint16_t PROGMEM mr12[] = {MAG5, MAG4, COMBO_END};
+const uint16_t PROGMEM mr23[] = {MAG5, MAG3, COMBO_END};
+const uint16_t PROGMEM mc13[] = {MAG3, COMBO_END};
+const uint16_t PROGMEM mfw[] = {MAG2, MAG3, MAG4, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
   [ZOOM_PLUS] = COMBO_ACTION(zoom_plus_combo),
   [ZOOM_MINUS] = COMBO_ACTION(zoom_minus_combo),
-  [ZOOM_RESET] = COMBO_ACTION(zoom_reset_combo)
+  [ZOOM_RESET] = COMBO_ACTION(zoom_reset_combo),
+  [ML13] = COMBO_ACTION(ml13),
+  [ML12] = COMBO_ACTION(ml12),
+  [ML23] = COMBO_ACTION(ml23),
+  [MR13] = COMBO_ACTION(mr13),
+  [MR12] = COMBO_ACTION(mr12),
+  [MR23] = COMBO_ACTION(mr23),
+  [MC13] = COMBO_ACTION(mc13),
+  [MFW] = COMBO_ACTION(mfw),
 };
 
 void process_combo_event(uint8_t combo_index, bool pressed) {
@@ -85,6 +125,46 @@ void process_combo_event(uint8_t combo_index, bool pressed) {
     case ZOOM_RESET:
       if (pressed) {
         tap_code16(RGUI(KC_0));
+      }
+      break;
+    case ML13:
+      if (pressed) {
+        tap_code16(MAG_L13);
+      }
+      break;
+    case ML12:
+      if (pressed) {
+        tap_code16(MAG_L12);
+      }
+      break;
+    case ML23:
+      if (pressed) {
+        tap_code16(MAG_L23);
+      }
+      break;
+    case MR13:
+      if (pressed) {
+        tap_code16(MAG_R13);
+      }
+      break;
+    case MR12:
+      if (pressed) {
+        tap_code16(MAG_R12);
+      }
+      break;
+    case MR23:
+      if (pressed) {
+        tap_code16(MAG_R23);
+      }
+      break;
+    case MC13:
+      if (pressed) {
+        tap_code16(MAG_C13);
+      }
+      break;
+    case MFW:
+      if (pressed) {
+        tap_code16(MAG_FW);
       }
       break;
   }
@@ -156,7 +236,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                   `----------------------------'           '------''--------------------'
  */
 [_SYM_NAV] = LAYOUT( \
-  _______, _______, _______, _______, _______, _______,                   _______, _______, _______,_______, _______, _______, \
+  _______, MAG1, MAG2, MAG3, MAG4, MAG5,                   _______, _______, _______,_______, _______, _______, \
   _______, KC_PIPE, _______, KC_LBRC, KC_RBRC,  KC_PLUS,                  KC_HOME, KC_PGDN, KC_PGUP, KC_END, _______, _______, \
   _______, _______, _______, KC_LPRN, KC_RPRN, KC_EQUAL,                  KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, _______, _______, \
   _______, _______, _______, KC_LCBR, KC_RCBR, KC_BSLS, _______,   _______, _______, _______, _______, _______, _______, KC_ENT, \
@@ -168,7 +248,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |         UP         |        LEFT        |                    |        RIGHT       |        DOWN        |
  * |  DOC | PAGE | LINE | LINE | WORD | CHAR |                    | CHAR | WORD | LINE | LINE | PAGE | DOC  |
  * ,-----------------------------------------.                    ,-----------------------------------------.
- * |      |      | SPCL | TABL | WINL | APPL |                    | APPR | WINR | TABR | SPCR |      |      |   FOCUS SWITCHING (application, window, tab)
+ * |      |      | SPCL | TABL | WINL | APPL |                    | APPR | WINR | TABR | SPCR |      |      |   FOCUS SWITCHING (application, window, tab, space)
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |      |  DLL |  DWL | BSPC |                    |  Del |  DWR |  DLR |      |      |      |   DELETE
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
@@ -260,3 +340,11 @@ void matrix_scan_user(void) {
     // tmux splits and focus (in meantime, iterm split horizontal, iterm split vertical)
   }
 }
+
+// instead of using leader for magnet, consider encoding with 5 keys: [1, 2, 3, 4, 5] at top left of symnav layer
+// left, center, right thirds: 1, 3, 5
+// left, right halves: (1,2), (4,5)
+// left, right 2/3rds: (1,3), (3,5)
+// full width: (3,4,5)
+// use otherwise meaningless keycodes for this (e.g. F13 and above)
+// then do combos
