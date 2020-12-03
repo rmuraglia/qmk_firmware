@@ -22,6 +22,47 @@ enum layers {
   _FN_NUM,
 };
 
+// chunk for super alt tab
+// https://beta.docs.qmk.fm/using-qmk/advanced-keycodes/feature_macros#super-alt-tab
+bool is_alt_tab_active = false;
+uint16_t alt_tab_timer = 0;
+
+enum custom_keycodes {
+  KY_CAR = SAFE_RANGE,         // change app right (alt tab)
+  KY_CAL                       // change app left (shift alt tab)
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case KY_CAR:
+      if (record->event.pressed) {
+        if (!is_alt_tab_active) {
+          is_alt_tab_active = true;
+          register_code(KC_LGUI);
+        }
+        alt_tab_timer = timer_read();
+        register_code(KC_TAB);
+      } else {
+        unregister_code(KC_TAB);
+      }
+      break;
+    case KY_CAL:
+      if (record->event.pressed) {
+        if (!is_alt_tab_active) {
+          is_alt_tab_active = true;
+          register_code(KC_LGUI);
+        }
+        alt_tab_timer = timer_read();
+        register_code16(LSFT(KC_TAB));
+      } else {
+        unregister_code16(LSFT(KC_TAB));
+      }
+      break;
+  }
+  return true;
+}
+
+// list of simple custom keycodes for MDS layer
 #define KY_MWL LOPT(KC_LEFT)   // move   word left
 #define KY_MWR LOPT(KC_RIGHT)  // move   word right
 #define KY_MLL LCTL(KC_A)      // move   line left
@@ -36,8 +77,6 @@ enum layers {
 #define KY_SWR LSFT(KY_MWR)    // select word right
 #define KY_SLL LSFT(KY_MLL)    // select line left
 #define KY_SLR LSFT(KY_MLR)    // select line right
-#define KY_CAR LGUI(KC_TAB)    // change app right
-#define KY_CAL LSFT(KY_CAR)    // change app left
 #define KY_CWR LGUI(KC_GRV)    // change window right
 #define KY_CWL LSFT(KY_CWR)    // change window left
 #define KY_CTR LCTL(KC_TAB)    // change tab right
@@ -141,7 +180,7 @@ void process_combo_event(uint8_t combo_index, bool pressed) {
   }
 };
 
-
+// make tapping term for layers very quick, and shorten for space (continue tweaking this)
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case LT(_SYM_NAV, KC_ENT):
@@ -287,5 +326,11 @@ void matrix_scan_user(void) {
     // to do: Sublime Repl Line, Sublime Repl File, Sublime Command Palette, Sublime # Col, Sublime # Row, Sublime 4 Grid
     // Origami Carry HJKL, Origami Destroy HJKL, Sublime New View (into file)
     // tmux splits and focus (in meantime, iterm split horizontal, iterm split vertical)
+  }
+  if (is_alt_tab_active) {
+    if (timer_elapsed(alt_tab_timer) > 750) {
+      unregister_code(KC_LGUI);
+      is_alt_tab_active = false;
+    }
   }
 }
