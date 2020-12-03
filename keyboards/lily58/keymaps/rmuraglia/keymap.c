@@ -1,18 +1,12 @@
 #include QMK_KEYBOARD_H
 
 // to do:
-// finish vertical movement in MDS layer. may require macros for deletion (select then delete, or move then ctrl shift k)
-// leader or layer for complex shortcuts (e.g. sublime cmd palette, origami, magnet)
 // figure out how to move by half screen, like vim c-u, c-d
-
-// maybe changes:
-// deprecate backspace -> +=
-// deprecate rshift -> \|
-
 // refs:
 // https://github.com/qmk/qmk_firmware/blob/master/keyboards/lily58/keymaps/bcat/keymap.c
 // https://github.com/qmk/qmk_firmware/blob/master/keyboards/sofle/keymaps/default/keymap.c
 // https://config.qmk.fm/#/test/
+// use super alt tab: https://beta.docs.qmk.fm/using-qmk/advanced-keycodes/feature_macros#super-alt-tab
 
 #ifdef PROTOCOL_LUFA
   #include "lufa.h"
@@ -66,14 +60,12 @@ enum layers {
 #define MAG4 KC_F16  // alias obscure F-keys for magnet comboing
 #define MAG5 KC_F17  // alias obscure F-keys for magnet comboing
 
-
-// want a zoom in (cmd+) on the right side of the layout near the native zoom out and zoom resets
-// use the dedicated right control for the combo, because comboing with the mod tap cmd behaved strangely
-// make combos for zoom out and zoom reset as well for consistency
+// use combos to compress (left|right|center)x(1/2|1/3|2/3) + full width to just 5 keys
+// left, center, right thirds: 1, 3, 5
+// left, right halves: (1,2), (4,5)
+// left, right 2/3rds: (1,3), (3,5)
+// full width: (3,4,5)
 enum combo_events {
-  ZOOM_PLUS,
-  ZOOM_MINUS,
-  ZOOM_RESET,
   ML13,
   ML12,
   ML23,
@@ -84,9 +76,6 @@ enum combo_events {
   MFW,
 };
 
-const uint16_t PROGMEM zoom_plus_combo[] = {KC_RCTL, KC_QUOT, COMBO_END};
-const uint16_t PROGMEM zoom_minus_combo[] = {KC_RCTL, KC_MINS, COMBO_END};
-const uint16_t PROGMEM zoom_reset_combo[] = {KC_RCTL, KC_0, COMBO_END};
 const uint16_t PROGMEM ml13[] = {MAG1, COMBO_END};
 const uint16_t PROGMEM ml12[] = {MAG1, MAG2, COMBO_END};
 const uint16_t PROGMEM ml23[] = {MAG1, MAG3, COMBO_END};
@@ -97,9 +86,6 @@ const uint16_t PROGMEM mc13[] = {MAG3, COMBO_END};
 const uint16_t PROGMEM mfw[] = {MAG2, MAG3, MAG4, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
-  [ZOOM_PLUS] = COMBO_ACTION(zoom_plus_combo),
-  [ZOOM_MINUS] = COMBO_ACTION(zoom_minus_combo),
-  [ZOOM_RESET] = COMBO_ACTION(zoom_reset_combo),
   [ML13] = COMBO_ACTION(ml13),
   [ML12] = COMBO_ACTION(ml12),
   [ML23] = COMBO_ACTION(ml23),
@@ -112,21 +98,6 @@ combo_t key_combos[COMBO_COUNT] = {
 
 void process_combo_event(uint8_t combo_index, bool pressed) {
   switch(combo_index) {
-    case ZOOM_PLUS:
-      if (pressed) {
-        tap_code16(RGUI(KC_EQUAL));
-      }
-      break;
-    case ZOOM_MINUS:
-      if (pressed) {
-        tap_code16(RGUI(KC_MINS));
-      }
-      break;
-    case ZOOM_RESET:
-      if (pressed) {
-        tap_code16(RGUI(KC_0));
-      }
-      break;
     case ML13:
       if (pressed) {
         tap_code16(MAG_L13);
@@ -177,6 +148,8 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
             return 100;
         case LT(_FN_NUM, KC_TAB):
             return 100;
+        case RSFT_T(KC_SPC):
+          return 120;
         default:
             return TAPPING_TERM;
     }
@@ -311,40 +284,8 @@ void matrix_scan_user(void) {
     SEQ_TWO_KEYS(KC_S, KC_L) {  // spotlight -> go to slack
       SEND_STRING(SS_LGUI(" ") SS_DELAY(50) "slack" SS_TAP(X_ENT));
     }
-    SEQ_THREE_KEYS(KC_M, KC_F, KC_S) {  // magnet, full screen
-      tap_code16(LGUI(LOPT(KC_UP)));
-    }
-    SEQ_FOUR_KEYS(KC_M, KC_H, KC_1, KC_3) {  // magnet, left, 1/3
-      tap_code16(LCTL(LOPT(KC_LEFT)));
-    }
-    SEQ_FOUR_KEYS(KC_M, KC_H, KC_1, KC_2) {  // magnet, left, 1/2
-      tap_code16(LGUI(LOPT(KC_LEFT)));
-    }
-    SEQ_FOUR_KEYS(KC_M, KC_H, KC_2, KC_3) {  // magnet, left, 2/3
-      tap_code16(LCTL(LGUI(KC_LEFT)));
-    }
-    SEQ_FOUR_KEYS(KC_M, KC_L, KC_1, KC_3) {  // magnet, right, 1/3
-      tap_code16(LCTL(LOPT(KC_RIGHT)));
-    }
-    SEQ_FOUR_KEYS(KC_M, KC_L, KC_1, KC_2) {  // magnet, right, 1/2
-      tap_code16(LGUI(LOPT(KC_RIGHT)));
-    }
-    SEQ_FOUR_KEYS(KC_M, KC_L, KC_2, KC_3) {  // magnet, right, 2/3
-      tap_code16(LCTL(LGUI(KC_RIGHT)));
-    }
-    SEQ_FOUR_KEYS(KC_M, KC_J, KC_1, KC_3) {  // magnet, middle, 1/3
-      tap_code16(LCTL(LOPT(KC_DOWN)));
-    }
     // to do: Sublime Repl Line, Sublime Repl File, Sublime Command Palette, Sublime # Col, Sublime # Row, Sublime 4 Grid
     // Origami Carry HJKL, Origami Destroy HJKL, Sublime New View (into file)
     // tmux splits and focus (in meantime, iterm split horizontal, iterm split vertical)
   }
 }
-
-// instead of using leader for magnet, consider encoding with 5 keys: [1, 2, 3, 4, 5] at top left of symnav layer
-// left, center, right thirds: 1, 3, 5
-// left, right halves: (1,2), (4,5)
-// left, right 2/3rds: (1,3), (3,5)
-// full width: (3,4,5)
-// use otherwise meaningless keycodes for this (e.g. F13 and above)
-// then do combos
