@@ -35,17 +35,18 @@ enum custom_keycodes {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case KY_CAR:
-      if (record->event.pressed) {
+      if (record->event.pressed) {  // do something on key press
         if (!is_alt_tab_active) {
           is_alt_tab_active = true;
           register_code(KC_LGUI);
         }
         alt_tab_timer = timer_read();
         register_code(KC_TAB);
-      } else {
+      } else {  // do something on key release
         unregister_code(KC_TAB);
       }
       break;
+
     case KY_CAL:
       if (record->event.pressed) {
         if (!is_alt_tab_active) {
@@ -58,8 +59,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         unregister_code16(LSFT(KC_TAB));
       }
       break;
+
+    // origami things can be added here with send string: https://beta.docs.qmk.fm/using-qmk/advanced-keycodes/feature_macros#the-new-way-send_string-and-process_record_userg
   }
-  return true;
+  return true;  // process all other keycodes normally
 }
 
 // list of simple custom keycodes for MDS layer
@@ -82,7 +85,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #define KY_CTR LCTL(KC_TAB)    // change tab right
 #define KY_CTL LSFT(KY_CTR)    // change tab left
 #define KY_CSL LSFT(LCTL(LGUI(LOPT(KC_RIGHT))))   // change space left
-#define KY_CSR LCTL(LGUI(LOPT(KC_RIGHT)))  // change space right
+#define KY_CSR LCTL(LGUI(LOPT(KC_RIGHT)))         // change space right
 
 // chunk for my defined magnet shortcuts for window management
 #define MAG_L13 LCTL(LOPT(KC_LEFT))   // magnet left 1/3
@@ -237,21 +240,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |      | mag1 | mag2 | mag3 | mag4 | mag5 |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |   |  |      |   [  |   ]  |   +  |                    |      |      |      |      |      |      | # todo: add origami here
+ * |      |      |      |   [  |   ]  |      |                    |      |      |      |      |      |      | # todo: add origami here
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |      |   (  |   )  |   =  |-------.    ,-------| Left | Down |  Up  | Right|      |      |
+ * |      |      |      |   (  |   )  |      |-------.    ,-------| Left | Down |  Up  | Right|      |      |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
- * |      |      |      |   {  |   }  |   \  |-------|    |-------|      |      |      |      |      |      |
+ * |      |      |      |   {  |   }  |      |-------|    |-------|      |      |      |      |      |      |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   |      |      |      | /BackSP /       \Space \  |      |  Del |      |
  *                   |      |      |      |/       /         \      \ |      |      |      |
  *                   `----------------------------'           '------''--------------------'
  */
 [_SYM_NAV] = LAYOUT( \
-  _______, MAG1, MAG2, MAG3, MAG4, MAG5,                                  _______, _______, _______,_______, _______, _______, \
-  _______, KC_PIPE, _______, KC_LBRC, KC_RBRC,  KC_PLUS,                  _______, _______, _______, _______, _______, _______, \
-  _______, _______, _______, KC_LPRN, KC_RPRN, KC_EQUAL,                  KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, _______, _______, \
-  _______, _______, _______, KC_LCBR, KC_RCBR, KC_BSLS, _______,   _______, _______, _______, _______, _______, _______, _______, \
+  _______, MAG1, MAG2, MAG3, MAG4, MAG5,                                  _______, _______, _______, _______, _______, _______, \
+  _______, _______, _______, KC_LBRC, KC_RBRC, _______,                   _______, _______, _______, _______, _______, _______, \
+  _______, _______, _______, KC_LPRN, KC_RPRN, _______,                   KC_LEFT, KC_DOWN,  KC_UP, KC_RIGHT, _______, _______, \
+  _______, _______, _______, KC_LCBR, KC_RCBR, _______, _______,   _______, _______, _______, _______, _______, _______, _______, \
                     _______, _______, _______, KC_BSPC,                   KC_SPC,  _______, KC_DEL, _______ \
 ),
 /* FN_NUM: Functions and numpad (right hand numpad not yet implemented)
@@ -272,7 +275,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, _______, _______, _______, _______, _______,                   _______,  _______, _______, _______, _______, _______, \
   _______, _______, _______,   KC_F2,   KC_F9,  KC_F12,                      KC_7,    KC_8,    KC_9, _______, _______, _______, \
   _______, _______, _______, _______,   KC_F8,  KC_F10,                      KC_4,    KC_5,    KC_6, _______, _______, _______, \
-  _______, _______, _______,   KC_F1,   KC_F7,  KC_F11, _______,    KC_TAB,    KC_1,  KC_2,    KC_3, _______, _______, _______, \
+  _______, _______, _______,   KC_F1,   KC_F7,  KC_F11, _______,    KC_TAB,  KC_1,    KC_2,    KC_3, _______, _______, _______, \
                     _______, _______, _______, KC_BSPC,                    KC_ENT,  KC_0, KC_DOT, _______ \
 ),
 /* MDS: Movement, deletion and selection
