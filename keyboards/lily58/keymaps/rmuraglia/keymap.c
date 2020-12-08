@@ -18,8 +18,8 @@ extern uint8_t is_master;
 enum layers {
   _QWERTY,
   _SYM_NAV,
-  _MDS,
   _FN_NUM,
+  _MDS,
 };
 
 // chunk for super alt tab
@@ -220,7 +220,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |  `~  |   Q  |   W  |   E  |   R  |   T  |                    |   Y  |   U  |   I  |   O  |   P  |  -_  |
  * |------+------+------+------+------+------|-------.    ,-------|------+------+------+------+------+------|
- * | LCtrl|   A  |   S  |   D  |   F  |   G  |       |    |       |   H  |   J  |   K  |   L  |   ;: |  '"  |
+ * | LCtrl|   A  |   S  |   D  |   F  |   G  |  [{   |    |   ]}  |   H  |   J  |   K  |   L  |   ;: |  '"  |
  * |------+------+------+------+------+------|  MDS  |    |  MDS  |------+------+------+------+------+------|
  * | LAlt |   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,< |   .> |   /? |  \|  |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
@@ -233,7 +233,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_LEAD,  KC_1,   KC_2,    KC_3,    KC_4,    KC_5,                     KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_EQUAL, \
   KC_GRV,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_MINS, \
   KC_LCTRL, KC_A,   KC_S,    KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, \
-  KC_LALT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, MO(_MDS), MO(_MDS), KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_BSLASH, \
+  KC_LALT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, LT(_MDS, KC_LBRC), LT(_MDS, KC_RBRC), KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_BSLASH, \
   KY_CSR, LGUI_T(KC_ESC), LT(_FN_NUM, KC_TAB), LSFT_T(KC_BSPC), RSFT_T(KC_SPC), LT(_SYM_NAV, KC_ENT), RGUI_T(KC_DEL), KY_CAR  \
 ),
 /* SYM_NAV: symbols and navigation
@@ -254,10 +254,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, MAG1, MAG2, MAG3, MAG4, MAG5,                                  _______, _______, _______, _______, _______, _______, \
   _______, _______, _______, KC_LBRC, KC_RBRC, _______,                   _______, _______, _______, _______, _______, _______, \
   _______, _______, _______, KC_LPRN, KC_RPRN, _______,                   KC_LEFT, KC_DOWN,  KC_UP, KC_RIGHT, _______, _______, \
-  _______, _______, _______, KC_LCBR, KC_RCBR, _______, _______,   _______, _______, _______, _______, _______, _______, _______, \
+  _______, _______, _______, KC_LCBR, KC_RCBR, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
                     _______, _______, _______, KC_BSPC,                   KC_SPC,  _______, KC_DEL, _______ \
 ),
-/* FN_NUM: Functions and numpad (right hand numpad not yet implemented)
+/* FN_NUM: Functions and numpad
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
@@ -302,7 +302,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, _______, _______,  KY_DLL,  KY_DWL, KC_BSPC,                    KC_DEL,  KY_DWR,  KY_DLR, _______, _______, _______, \
   _______, _______, _______,  KY_MLL,  KY_MWL, KC_LEFT,                  KC_RIGHT,  KY_MWR,  KY_MLR, _______, _______, _______, \
   _______, _______, _______,  KY_SLL,  KY_SWL,  KY_SCL, _______, _______,  KY_SCR,  KY_SWR,  KY_SLR, _______, _______, _______, \
-                    _______, _______, _______, KC_BSPC,                   KC_SPC,  _______, KC_DEL, _______ \
+                    _______, _______, _______, KC_BSPC,                    KC_SPC,  _______, KC_DEL, _______ \
 ),
 };
 
