@@ -2,11 +2,22 @@
 
 // to do:
 // figure out how to move by half screen, like vim c-u, c-d
+// consider replacing leader with one shot layer for shortcuts and macros
+// cmd [] history navigation
+// cmd {} tab navigation. seems more universal than ctrl tab (note that iterm has weird internal settings for this)
+// consider fleshing out a reduced mouse layout:
+  // mission control
+  // move workspace
+  // carry window to workspace
+  // change window (cmd `)
+  // browser forward/back: ideal on left hand since right hand mouse operation
+
+// wrist rest long and skinny: like 20 x 2,unfortunately, 17 seems like the standard (length of typical fullsize keyboard)
+
 // refs:
 // https://github.com/qmk/qmk_firmware/blob/master/keyboards/lily58/keymaps/bcat/keymap.c
 // https://github.com/qmk/qmk_firmware/blob/master/keyboards/sofle/keymaps/default/keymap.c
 // https://config.qmk.fm/#/test/
-// use super alt tab: https://beta.docs.qmk.fm/using-qmk/advanced-keycodes/feature_macros#super-alt-tab
 
 #ifdef PROTOCOL_LUFA
   #include "lufa.h"
@@ -28,8 +39,20 @@ bool is_alt_tab_active = false;
 uint16_t alt_tab_timer = 0;
 
 enum custom_keycodes {
-  KY_CAR = SAFE_RANGE,         // change app right (alt tab)
-  KY_CAL                       // change app left (shift alt tab)
+  KY_CAR = SAFE_RANGE, // change app right (alt tab)
+  KY_OFL,              // origami focus left
+  KY_OFD,              // origami focus down
+  KY_OFU,              // origami focus up
+  KY_OFR,              // origami focus right
+  KY_OCL,              // origami carry left
+  KY_OCD,              // origami carry down
+  KY_OCU,              // origami carry up
+  KY_OCR,              // origami carry right
+  KY_ODL,              // origami destroy left
+  KY_ODD,              // origami destroy down
+  KY_ODU,              // origami destroy up
+  KY_ODR,              // origami destroy right
+  KY_ODS,              // origami destroy self
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -47,25 +70,97 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       break;
 
-    case KY_CAL:
+    case KY_OFL:
       if (record->event.pressed) {
-        if (!is_alt_tab_active) {
-          is_alt_tab_active = true;
-          register_code(KC_LGUI);
-        }
-        alt_tab_timer = timer_read();
-        register_code16(LSFT(KC_TAB));
-      } else {
-        unregister_code16(LSFT(KC_TAB));
+        SEND_STRING(SS_LGUI("k") SS_DELAY(10) SS_TAP(X_LEFT));
       }
       break;
 
-    // origami things can be added here with send string: https://beta.docs.qmk.fm/using-qmk/advanced-keycodes/feature_macros#the-new-way-send_string-and-process_record_userg
+    case KY_OFD:
+      if (record->event.pressed) {
+        SEND_STRING(SS_LGUI("k") SS_DELAY(10) SS_TAP(X_DOWN));
+      }
+      break;
+
+    case KY_OFU:
+      if (record->event.pressed) {
+        SEND_STRING(SS_LGUI("k") SS_DELAY(10) SS_TAP(X_UP));
+      }
+      break;
+
+    case KY_OFR:
+      if (record->event.pressed) {
+        SEND_STRING(SS_LGUI("k") SS_DELAY(10) SS_TAP(X_RIGHT));
+      }
+      break;
+
+    case KY_OCL:
+      if (record->event.pressed) {
+        tap_code16(LGUI(KC_K));
+        tap_code16(LSFT(KC_LEFT));
+      }
+      break;
+
+    case KY_OCD:
+      if (record->event.pressed) {
+        tap_code16(LGUI(KC_K));
+        tap_code16(LSFT(KC_DOWN));
+      }
+      break;
+
+    case KY_OCU:
+      if (record->event.pressed) {
+        tap_code16(LGUI(KC_K));
+        tap_code16(LSFT(KC_UP));
+      }
+      break;
+
+    case KY_OCR:
+      if (record->event.pressed) {
+        tap_code16(LGUI(KC_K));
+        tap_code16(LSFT(KC_RIGHT));
+      }
+      break;
+
+    case KY_ODL:
+      if (record->event.pressed) {
+        tap_code16(LGUI(KC_K));
+        tap_code16(LGUI(LSFT(KC_LEFT)));
+      }
+      break;
+
+    case KY_ODD:
+      if (record->event.pressed) {
+        tap_code16(LGUI(KC_K));
+        tap_code16(LGUI(LSFT(KC_DOWN)));
+      }
+      break;
+
+    case KY_ODU:
+      if (record->event.pressed) {
+        tap_code16(LGUI(KC_K));
+        tap_code16(LGUI(LSFT(KC_UP)));
+      }
+      break;
+
+    case KY_ODR:
+      if (record->event.pressed) {
+        tap_code16(LGUI(KC_K));
+        tap_code16(LGUI(LSFT(KC_RIGHT)));
+      }
+      break;
+
+    case KY_ODS:
+      if (record->event.pressed) {
+        tap_code16(LGUI(KC_K));
+        tap_code16(LGUI(LSFT(KC_0)));
+      }
+      break;
   }
   return true;  // process all other keycodes normally
 }
 
-// list of simple custom keycodes for MDS layer
+// custom keycodes for MDS layer
 #define KY_MWL LOPT(KC_LEFT)   // move   word left
 #define KY_MWR LOPT(KC_RIGHT)  // move   word right
 #define KY_MLL LCTL(KC_A)      // move   line left
@@ -80,12 +175,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #define KY_SWR LSFT(KY_MWR)    // select word right
 #define KY_SLL LSFT(KY_MLL)    // select line left
 #define KY_SLR LSFT(KY_MLR)    // select line right
-#define KY_CWR LGUI(KC_GRV)    // change window right
-#define KY_CWL LSFT(KY_CWR)    // change window left
-#define KY_CTR LCTL(KC_TAB)    // change tab right
-#define KY_CTL LSFT(KY_CTR)    // change tab left
-#define KY_CSL LSFT(LCTL(LGUI(LOPT(KC_RIGHT))))   // change space left
-#define KY_CSR LCTL(LGUI(LOPT(KC_RIGHT)))         // change space right
+
+// custom keycodes for window management
+#define KY_CWR LGUI(KC_GRV)                 // change window right
+#define KY_CWL LSFT(KY_CWR)                 // change window left
+#define KY_CTR LCTL(KC_TAB)                 // change tab right, can also be ctrl(tab) or cmd(curly).
+#define KY_CTL LSFT(KY_CTR)                 // change tab left
+#define KY_CSR LCTL(LGUI(LOPT(KC_RIGHT)))   // change space right
+#define KY_CSL LSFT(KY_CSR)                 // change space left
+
+// cmd square bracket is history navigation
 
 // chunk for my defined magnet shortcuts for window management
 #define MAG_L13 LCTL(LOPT(KC_LEFT))   // magnet left 1/3
@@ -101,6 +200,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #define MAG3 KC_F15  // alias obscure F-keys for magnet comboing
 #define MAG4 KC_F16  // alias obscure F-keys for magnet comboing
 #define MAG5 KC_F17  // alias obscure F-keys for magnet comboing
+// no need to define, but note that cmd ctrl F is system-wide fullscreen
 
 // use combos to compress (left|right|center)x(1/2|1/3|2/3) + full width to just 5 keys
 // left, center, right thirds: 1, 3, 5
@@ -237,27 +337,37 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KY_CSR, LGUI_T(KC_ESC), LT(_FN_NUM, KC_TAB), LSFT_T(KC_BSPC), RSFT_T(KC_SPC), LT(_SYM_NAV, KC_ENT), RGUI_T(KC_DEL), KY_CAR  \
 ),
 /* SYM_NAV: symbols and navigation
+ * todo: rename this to a window management layer as all symbols have been moved off
+ * left hand:
+ *   - magnet for window snapping/resizing
+ *   - origami for sublime pane management: (destroy|carry|focus) x (direction) + (destroy self)
+ * right hand:
+ *   - basic hjkl arrows
+ *   - ideal: carry window across display, move mouse focus across displays, change workspace
+ * wksp, tab, app switching; carry window across display; move focus across display (needs hammerspoon); pgup pgdn
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |      | mag1 | mag2 | mag3 | mag4 | mag5 |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |      |   [  |   ]  |      |                    |      |      |      |      |      |      | # todo: add origami here
+ * |      |  ODS |  ODL |  ODD |  ODU |  ODR |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |      |   (  |   )  |      |-------.    ,-------| Left | Down |  Up  | Right|      |      |
+ * |      |      |  OCL |  OCD |  OCU |  OCR |-------.    ,-------| Left | Down |  Up  | Right|      |      |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
- * |      |      |      |   {  |   }  |      |-------|    |-------|      |      |      |      |      |      |
+ * |      |      |  OFL |  OFD |  OFU |  OFR |-------|    |-------|      |      |      |      |      |      |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   |      |      |      | /BackSP /       \Space \  |      |  Del |      |
  *                   |      |      |      |/       /         \      \ |      |      |      |
  *                   `----------------------------'           '------''--------------------'
  */
 [_SYM_NAV] = LAYOUT( \
-  _______, MAG1, MAG2, MAG3, MAG4, MAG5,                                  _______, _______, _______, _______, _______, _______, \
-  _______, _______, _______, KC_LBRC, KC_RBRC, _______,                   _______, _______, _______, _______, _______, _______, \
-  _______, _______, _______, KC_LPRN, KC_RPRN, _______,                   KC_LEFT, KC_DOWN,  KC_UP, KC_RIGHT, _______, _______, \
-  _______, _______, _______, KC_LCBR, KC_RCBR, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
+  _______,    MAG1,    MAG2,    MAG3,    MAG4,    MAG5,                   _______, _______, _______, _______, _______, _______, \
+  _______,  KY_ODS,  KY_ODL,  KY_ODD,  KY_ODU,  KY_ODR,                   _______, _______, _______, _______, _______, _______, \
+  _______, _______,  KY_OCL,  KY_OCD,  KY_OCU,  KY_OCR,                   KC_LEFT, KC_DOWN,  KC_UP, KC_RIGHT, _______, _______, \
+  _______, _______,  KY_OFL,  KY_OFD,  KY_OFU,  KY_OFR, _______, _______, _______, _______, _______, _______, _______, _______, \
                     _______, _______, _______, KC_BSPC,                   KC_SPC,  _______, KC_DEL, _______ \
 ),
 /* FN_NUM: Functions and numpad
+ * add mission control keyboard controls, like wksp change
+ * add browser control
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
@@ -326,9 +436,6 @@ void matrix_scan_user(void) {
     SEQ_TWO_KEYS(KC_S, KC_L) {  // spotlight -> go to slack
       SEND_STRING(SS_LGUI(" ") SS_DELAY(50) "slack" SS_TAP(X_ENT));
     }
-    // to do: Sublime Repl Line, Sublime Repl File, Sublime Command Palette, Sublime # Col, Sublime # Row, Sublime 4 Grid
-    // Origami Carry HJKL, Origami Destroy HJKL, Sublime New View (into file)
-    // tmux splits and focus (in meantime, iterm split horizontal, iterm split vertical)
   }
   if (is_alt_tab_active) {
     if (timer_elapsed(alt_tab_timer) > 750) {
