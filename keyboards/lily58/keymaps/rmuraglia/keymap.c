@@ -12,7 +12,15 @@
   // change window (cmd `)
   // browser forward/back: ideal on left hand since right hand mouse operation
 
-// wrist rest long and skinny: like 20 x 2,unfortunately, 17 seems like the standard (length of typical fullsize keyboard)
+// option if don't care about multi display shortcuts (move focus, carry window)
+// raise yuio: delete LL, LW, RW, RL
+// raise nm,.: move LL, LW, RW, RL
+// this means we can deprecate MDS layer
+// lower op l; for square and curly brackets
+// this frees up inner col for macros (e.g. alt tab)
+// this frees up corners for ??? (mission control?)
+
+// leader for code block triple backticks, optional to put language tag 
 
 // refs:
 // https://github.com/qmk/qmk_firmware/blob/master/keyboards/lily58/keymaps/bcat/keymap.c
@@ -40,14 +48,14 @@ uint16_t alt_tab_timer = 0;
 
 enum custom_keycodes {
   KY_CAR = SAFE_RANGE, // change app right (alt tab)
-  KY_OFL,              // origami focus left
-  KY_OFD,              // origami focus down
-  KY_OFU,              // origami focus up
-  KY_OFR,              // origami focus right
-  KY_OCL,              // origami carry left
-  KY_OCD,              // origami carry down
-  KY_OCU,              // origami carry up
-  KY_OCR,              // origami carry right
+  KY_OFL,              // origami focus   left
+  KY_OFD,              // origami focus   down
+  KY_OFU,              // origami focus   up
+  KY_OFR,              // origami focus   right
+  KY_OCL,              // origami carry   left
+  KY_OCD,              // origami carry   down
+  KY_OCU,              // origami carry   up
+  KY_OCR,              // origami carry   right
   KY_ODL,              // origami destroy left
   KY_ODD,              // origami destroy down
   KY_ODU,              // origami destroy up
@@ -179,10 +187,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 // custom keycodes for window management
 #define KY_CWR LGUI(KC_GRV)                 // change window right
 #define KY_CWL LSFT(KY_CWR)                 // change window left
-#define KY_CTR LCTL(KC_TAB)                 // change tab right, can also be ctrl(tab) or cmd(curly).
-#define KY_CTL LSFT(KY_CTR)                 // change tab left
-#define KY_CSR LCTL(LGUI(LOPT(KC_RIGHT)))   // change space right
-#define KY_CSL LSFT(KY_CSR)                 // change space left
+#define KY_CTR LCTL(KC_TAB)                 // change tab    right, note: ctrl(tab) and cmd(curly) are equivalent
+#define KY_CTL LSFT(KY_CTR)                 // change tab    left
+#define KY_CSR LCTL(LGUI(LOPT(KC_RIGHT)))   // change space  right
+#define KY_CSL LSFT(KY_CSR)                 // change space  left
 
 // cmd square bracket is history navigation
 
@@ -341,6 +349,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * left hand:
  *   - magnet for window snapping/resizing
  *   - origami for sublime pane management: (destroy|carry|focus) x (direction) + (destroy self)
+ *   - sublime presets: one col, two col, three col, 2x2 grid
  * right hand:
  *   - basic hjkl arrows
  *   - ideal: carry window across display, move mouse focus across displays, change workspace
@@ -366,8 +375,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                     _______, _______, _______, KC_BSPC,                   KC_SPC,  _______, KC_DEL, _______ \
 ),
 /* FN_NUM: Functions and numpad
- * add mission control keyboard controls, like wksp change
- * add browser control
+ * add browser control, wksp change, hammerspoon alert (time, pomodoro?)
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
