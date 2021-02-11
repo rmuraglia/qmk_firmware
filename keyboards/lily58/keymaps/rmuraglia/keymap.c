@@ -14,13 +14,11 @@
 
 // option if don't care about multi display shortcuts (move focus, carry window)
 // raise yuio: delete LL, LW, RW, RL
-// raise nm,.: move LL, LW, RW, RL
+// raise nm,.: select LL, LW, RW, RL
 // this means we can deprecate MDS layer
 // lower op l; for square and curly brackets
 // this frees up inner col for macros (e.g. alt tab)
 // this frees up corners for ??? (mission control?)
-
-// leader for code block triple backticks, optional to put language tag 
 
 // refs:
 // https://github.com/qmk/qmk_firmware/blob/master/keyboards/lily58/keymaps/bcat/keymap.c
@@ -435,14 +433,17 @@ void matrix_scan_user(void) {
     SEQ_ONE_KEY(KC_Q) {  // OSX lock screen (quit)
       tap_code16(RGUI(RCTL(KC_Q)));
     }
-    SEQ_ONE_KEY(KC_F) {  // spotlight (find)
-      SEND_STRING(SS_LGUI(" "));
-    }
-    SEQ_ONE_KEY(KC_S) {  // screenshot
-      tap_code16(LGUI(LSFT(KC_4)));
+    SEQ_ONE_KEY(KC_GRV) {  // generic code block
+      SEND_STRING("```" SS_LSFT("\n\n") "```" SS_LSFT("\n") SS_TAP(X_UP) SS_TAP(X_UP));
     }
     SEQ_TWO_KEYS(KC_S, KC_L) {  // spotlight -> go to slack
       SEND_STRING(SS_LGUI(" ") SS_DELAY(50) "slack" SS_TAP(X_ENT));
+    }
+    SEQ_TWO_KEYS(KC_GRV, KC_S) {  // sql code block
+      SEND_STRING("```sql" SS_LSFT("\n\n") "```" SS_LSFT("\n") SS_TAP(X_UP) SS_TAP(X_UP));
+    }
+    SEQ_TWO_KEYS(KC_GRV, KC_P) {  // python code block
+      SEND_STRING("```python" SS_LSFT("\n\n") "```" SS_LSFT("\n") SS_TAP(X_UP) SS_TAP(X_UP));
     }
   }
   if (is_alt_tab_active) {
