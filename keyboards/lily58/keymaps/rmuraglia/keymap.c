@@ -2,23 +2,26 @@
 
 // to do:
 // figure out how to move by half screen, like vim c-u, c-d
-// consider replacing leader with one shot layer for shortcuts and macros
-// cmd [] history navigation
-// cmd {} tab navigation. seems more universal than ctrl tab (note that iterm has weird internal settings for this)
-// consider fleshing out a reduced mouse layout:
-  // mission control
-  // move workspace
-  // carry window to workspace
-  // change window (cmd `)
-  // browser forward/back: ideal on left hand since right hand mouse operation
+// rename the layers since the original layer names aren't relevant at all anymore
 
-// option if don't care about multi display shortcuts (move focus, carry window)
-// raise yuio: delete LL, LW, RW, RL
-// raise nm,.: select LL, LW, RW, RL
-// this means we can deprecate MDS layer
-// lower op l; for square and curly brackets
-// this frees up inner col for macros (e.g. alt tab)
-// this frees up corners for ??? (mission control?)
+// from MDS I really only move by word or line, and move/select are kinda redundant (could be done just with select -- frankly del could too)
+// consider condensing that 3x3x2 to just 2x2x2 which could fit above/below vim arrows
+  // raise yuio: delete LL, LW, RW, RL
+  // raise nm,.: select LL, LW, RW, RL
+  // this means we can deprecate MDS layer
+  // lower op l; for square and curly brackets
+  // this frees up inner col for macros (e.g. alt tab)
+  // this frees up bottom corners for ???
+
+// make super alt tab timer much longer and accept selection with enter or reject with esc (simulate holding down cmd until enter accepts)
+// on first press: register cmd + press tab
+// on release, keep cmd held down
+// seek with arrows, accept/reject with enter/esc
+// after accept/reject unregister cmd
+// I think this can be done in process record user,
+  // case if enter or esc
+  // if alt tab is/was active, unregister gui
+  // outside of if, also just register the keycode for enter/esc
 
 // refs:
 // https://github.com/qmk/qmk_firmware/blob/master/keyboards/lily58/keymaps/bcat/keymap.c
@@ -190,7 +193,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #define KY_CSR LCTL(LGUI(LOPT(KC_RIGHT)))   // change space  right
 #define KY_CSL LSFT(KY_CSR)                 // change space  left
 
-// cmd square bracket is history navigation
+// hammerspoon aliases
+#define HS_DIS  LGUI(LCTL(LOPT(KC_Q)))  // dismiss alerts
+#define HS_INFO LGUI(LCTL(LOPT(KC_I)))  // date, battery, bluetooth info
+#define HS_CAL  LGUI(LCTL(LOPT(KC_C)))  // calendar
+#define HS_EXP  LGUI(LCTL(LOPT(KC_E)))  // expose
+#define HS_FC1  LGUI(LCTL(LOPT(KC_1)))  // focus display 1
+#define HS_FC2  LGUI(LCTL(LOPT(KC_2)))  // focus display 2
+#define HS_FC3  LGUI(LCTL(LOPT(KC_3)))  // focus display 3
+#define HS_TH1  LGUI(LCTL(LOPT(KC_6)))  // throw window to display 1
+#define HS_TH2  LGUI(LCTL(LOPT(KC_7)))  // throw window to display 2
+#define HS_TH3  LGUI(LCTL(LOPT(KC_8)))  // throw window to display 3
+// todo: replace magnet window management with hs resizing
 
 // chunk for my defined magnet shortcuts for window management
 #define MAG_L13 LCTL(LOPT(KC_LEFT))   // magnet left 1/3
@@ -206,7 +220,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #define MAG3 KC_F15  // alias obscure F-keys for magnet comboing
 #define MAG4 KC_F16  // alias obscure F-keys for magnet comboing
 #define MAG5 KC_F17  // alias obscure F-keys for magnet comboing
-// no need to define, but note that cmd ctrl F is system-wide fullscreen
+
+//  system shortcuts worth nothing
+// cmd ctrl F: fullscreen
+// cmd []    : history navigation
+// cmd {}    : tab navigation (roughly equiv to ctrl tab -- some apps like iterm have weird overrides)
+// cmd `     : within app window switcher
 
 // use combos to compress (left|right|center)x(1/2|1/3|2/3) + full width to just 5 keys
 // left, center, right thirds: 1, 3, 5
@@ -343,23 +362,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KY_CSR, LGUI_T(KC_ESC), LT(_FN_NUM, KC_TAB), LSFT_T(KC_BSPC), RSFT_T(KC_SPC), LT(_SYM_NAV, KC_ENT), RGUI_T(KC_DEL), KY_CAR  \
 ),
 /* SYM_NAV: symbols and navigation
- * todo: rename this to a window management layer as all symbols have been moved off
- * left hand:
- *   - magnet for window snapping/resizing
- *   - origami for sublime pane management: (destroy|carry|focus) x (direction) + (destroy self)
- *   - sublime presets: one col, two col, three col, 2x2 grid
- * right hand:
- *   - basic hjkl arrows
- *   - ideal: carry window across display, move mouse focus across displays, change workspace
- * wksp, tab, app switching; carry window across display; move focus across display (needs hammerspoon); pgup pgdn
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |      | mag1 | mag2 | mag3 | mag4 | mag5 |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |  ODS |  ODL |  ODD |  ODU |  ODR |                    |      |      |      |      |      |      |
+ * |      |  ODS |  ODL |  ODD |  ODU |  ODR |                    | Vol- | Mute | Vol+ | Bri+ |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |  OCL |  OCD |  OCU |  OCR |-------.    ,-------| Left | Down |  Up  | Right|      |      |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
- * |      |      |  OFL |  OFD |  OFU |  OFR |-------|    |-------|      |      |      |      |      |      |
+ * |      |      |  OFL |  OFD |  OFU |  OFR |-------|    |-------| Prev | Play | Next | Bri- |      |      |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   |      |      |      | /BackSP /       \Space \  |      |  Del |      |
  *                   |      |      |      |/       /         \      \ |      |      |      |
@@ -367,32 +377,31 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_SYM_NAV] = LAYOUT( \
   _______,    MAG1,    MAG2,    MAG3,    MAG4,    MAG5,                   _______, _______, _______, _______, _______, _______, \
-  _______,  KY_ODS,  KY_ODL,  KY_ODD,  KY_ODU,  KY_ODR,                   _______, _______, _______, _______, _______, _______, \
-  _______, _______,  KY_OCL,  KY_OCD,  KY_OCU,  KY_OCR,                   KC_LEFT, KC_DOWN,  KC_UP, KC_RIGHT, _______, _______, \
-  _______, _______,  KY_OFL,  KY_OFD,  KY_OFU,  KY_OFR, _______, _______, _______, _______, _______, _______, _______, _______, \
+  _______,  KY_ODS,  KY_ODL,  KY_ODD,  KY_ODU,  KY_ODR,                   KC_F11,   KC_F10, KC_F12,    KC_F2, _______, _______, \
+  _______, _______,  KY_OCL,  KY_OCD,  KY_OCU,  KY_OCR,                  KC_LEFT,  KC_DOWN,  KC_UP, KC_RIGHT, _______, _______, \
+  _______, _______,  KY_OFL,  KY_OFD,  KY_OFU,  KY_OFR, _______, _______,  KC_F7,    KC_F8,  KC_F9,    KC_F1, _______, _______, \
                     _______, _______, _______, KC_BSPC,                   KC_SPC,  _______, KC_DEL, _______ \
 ),
 /* FN_NUM: Functions and numpad
- * add browser control, wksp change, hammerspoon alert (time, pomodoro?)
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |     |Bright+| Next | Vol+ |                    |   7  |   8  |  9   |      |      |      |
+ * |     |Dismiss|Focus1|Focus2|Focus3| Info |                    |   7  |   8  |  9   |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |     |MsnCtrl| Play | Mute |-------.    ,-------|   4  |   5  |  6   |      |      |      |
+ * |      |      | WkspL|MsnCtl| WkspR|Expose|-------.    ,-------|   4  |   5  |  6   |      |      |      |
  * |------+------+------+------+------+------|       |    |  tab  |------+------+------+------+------+------|
- * |      |      |     |Bright-| Prev | Vol- |-------|    |-------|   1  |   2  |  3   |      |      |      |
+ * |      |      |Throw1|Throw2|Throw3|  Cal |-------|    |-------|   1  |   2  |  3   |      |      |      |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   |      |      |      | /BackSP /       \Enter \  |   0  |   .  |      |
  *                   |      |      |      |/       /         \      \ |      |      |      |
  *                   `----------------------------'           '------''--------------------'
  */
   [_FN_NUM] = LAYOUT( \
-  _______, _______, _______, _______, _______, _______,                   _______,  _______, _______, _______, _______, _______, \
-  _______, _______, _______,   KC_F2,   KC_F9,  KC_F12,                      KC_7,    KC_8,    KC_9, _______, _______, _______, \
-  _______, _______, _______,   KC_F3,   KC_F8,  KC_F10,                      KC_4,    KC_5,    KC_6, _______, _______, _______, \
-  _______, _______, _______,   KC_F1,   KC_F7,  KC_F11, _______,    KC_TAB,  KC_1,    KC_2,    KC_3, _______, _______, _______, \
-                    _______, _______, _______, KC_BSPC,                    KC_ENT,  KC_0, KC_DOT, _______ \
+  _______, _______, _______, _______, _______, _______,                   _______, _______, _______, _______, _______, _______, \
+  _______,  HS_DIS,  HS_FC1,  HS_FC2,  HS_FC3, HS_INFO,                      KC_7,    KC_8,    KC_9, _______, _______, _______, \
+  _______, _______,  KY_CSL,   KC_F3,  KY_CSR,  HS_EXP,                      KC_4,    KC_5,    KC_6, _______, _______, _______, \
+  _______, _______,  HS_TH1,  HS_TH2,  HS_TH3,  HS_CAL, _______,    KC_TAB,  KC_1,    KC_2,    KC_3, _______, _______, _______, \
+                    _______, _______, _______, KC_BSPC,                    KC_ENT,    KC_0,  KC_DOT, _______ \
 ),
 /* MDS: Movement, deletion and selection
  * note: vertical movement optimized for sublime text 3, as in iterm I don't really care, and in vim I'll just dd the line or yank the section
