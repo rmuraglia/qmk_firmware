@@ -13,16 +13,6 @@
   // this frees up inner col for macros (e.g. alt tab)
   // this frees up bottom corners for ???
 
-// make super alt tab timer much longer and accept selection with enter or reject with esc (simulate holding down cmd until enter accepts)
-// on first press: register cmd + press tab
-// on release, keep cmd held down
-// seek with arrows, accept/reject with enter/esc
-// after accept/reject unregister cmd
-// I think this can be done in process record user,
-  // case if enter or esc
-  // if alt tab is/was active, unregister gui
-  // outside of if, also just register the keycode for enter/esc
-
 // refs:
 // https://github.com/qmk/qmk_firmware/blob/master/keyboards/lily58/keymaps/bcat/keymap.c
 // https://github.com/qmk/qmk_firmware/blob/master/keyboards/sofle/keymaps/default/keymap.c
@@ -349,7 +339,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|  MDS  |    |  MDS  |------+------+------+------+------+------|
  * | LAlt |   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,< |   .> |   /? |  \|  |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
- *                   | wkspR| Esc  | Tab  | /BackSP /       \Space \  | Enter |  Del |altTab|
+ *                   |      | Esc  | Tab  | /BackSP /       \Space \  | Enter |  Del |      |
  *                   |      | LGUI |FN_NUM|/ Shift /         \ Shift\ |SYM_NAV| RGUI |      |
  *                   `----------------------------'           '------''---------------------'
  */
@@ -359,7 +349,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_GRV,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_MINS, \
   KC_LCTRL, KC_A,   KC_S,    KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT, \
   KC_LALT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, LT(_MDS, KC_LBRC), LT(_MDS, KC_RBRC), KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_BSLASH, \
-  KY_CSR, LGUI_T(KC_ESC), LT(_FN_NUM, KC_TAB), LSFT_T(KC_BSPC), RSFT_T(KC_SPC), LT(_SYM_NAV, KC_ENT), RGUI_T(KC_DEL), KY_CAR  \
+  XXXXXXX, LGUI_T(KC_ESC), LT(_FN_NUM, KC_TAB), LSFT_T(KC_BSPC), RSFT_T(KC_SPC), LT(_SYM_NAV, KC_ENT), RGUI_T(KC_DEL), XXXXXXX  \
 ),
 /* SYM_NAV: symbols and navigation
  * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -453,6 +443,19 @@ void matrix_scan_user(void) {
     }
     SEQ_TWO_KEYS(KC_GRV, KC_P) {  // python code block
       SEND_STRING("```python" SS_LSFT("\n\n") "```" SS_LSFT("\n") SS_TAP(X_UP) SS_TAP(X_UP));
+    }
+    SEQ_TWO_KEYS(KC_Y, KC_O) {  // yo link markdown format (with sublime multi cursor)
+      SEND_STRING("[yo/\n](http://yo/\n)" SS_TAP(X_LEFT));
+      tap_code16(LCTL(LSFT(KC_UP)));
+      tap_code(KC_BSPC);
+    }
+    SEQ_TWO_KEYS(KC_V, KC_T) { // toggle vim number and list
+      SEND_STRING(SS_TAP(X_ESC) ":set number! list!" SS_TAP(X_ENT));
+    }
+    SEQ_TWO_KEYS(KC_C, KC_C) { // copy command (from iterm)
+      // enter copy code, go to beginning of line, right, right, start character copy, go to end of line, yank
+      tap_code16(LGUI(LSFT(KC_C)));
+      SEND_STRING("0llv$y");
     }
   }
   if (is_alt_tab_active) {
